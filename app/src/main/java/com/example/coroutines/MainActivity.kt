@@ -29,34 +29,20 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-//        //run blocking will block the main thread Global.scope wont.
-//        // If we call delay function in Global scope we can still use our UI while we are delaying that
-//        GlobalScope.launch(Dispatchers.Main) {
-//        }
+        // it returns a job so we can save it in a variable
+       val job = GlobalScope.launch(Dispatchers.Default) {
+           repeat(5){
+               Log.d(TAG,"Coroutine is still working ....")
+               delay(1000L)
+           }
 
-//        // ıf we use delay in runBlocing function
-//        // this will block our UI updates
-//        runBlocking {
-//            delay(100L)
-//        }
-
-
-        Log.d(TAG, "Before runblocking")
+       }
         runBlocking {
-            launch(Dispatchers.IO) {
-                delay(3000L)
-                Log.d(TAG, "Finished IO coroutine 1 ")
-            }
-            launch(Dispatchers.IO) {
-                delay(3000L)
-                Log.d(TAG, "Finished IO coroutine 2 ")
-            }
-
-            Log.d(TAG, "start of runblocking")
-            delay(5000L)
-            Log.d(TAG, "end of runblocking")
+            delay(2000L)
+            job.join()  //it will block our thread until coroutine(33. line) is finished
+            Log.d(TAG,"main thread is continuing ....")
         }
-        Log.d(TAG, "After runblocking")
+
     }
 
 
