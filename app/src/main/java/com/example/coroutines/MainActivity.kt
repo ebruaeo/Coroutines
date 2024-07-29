@@ -14,6 +14,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,21 +34,16 @@ class MainActivity : AppCompatActivity() {
 
         val job = GlobalScope.launch(Dispatchers.Default) {
            Log.d(TAG,"STARTİNG LONG RUNNİNG CALCULATİON")
-            for (i in 30..40){
-                if (isActive){ // checking if the coroutine is active
-                    Log.d(TAG,"result for i = $i :  ${fib(i)}")
+            withTimeout(200L){// if it needs longer than 3000mills it will cancel it automatically without needing us to cancel it manually
+                for (i in 30..40){
+                    if (isActive){
+                        Log.d(TAG,"result for i = $i :  ${fib(i)}")
+                    }
                 }
             }
+
             Log.d(TAG,"ending LONG RUNNİNG CALCULATİON")
-
-
         }
-        runBlocking {
-            delay (500L)
-            job.cancel()
-            Log.d(TAG, "cancelled job  ....")
-        }
-
     }
 
     fun fib(n: Int): Long {
