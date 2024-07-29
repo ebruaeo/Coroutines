@@ -9,12 +9,14 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.coroutines.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,27 +32,47 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        GlobalScope.launch(Dispatchers.IO) {
+//            val time = measureTimeMillis { // ıt is taking 6 seconds to finish, we dont have to wait that long.
+//                val answer1 = networkCall1()
+//                val answer2 = networkCall2()
+//                Log.d(TAG,"Answer1 is $answer1")
+//                Log.d(TAG,"Answer2 is $answer2")
+//            }
+            //  Log.d(TAG,"Requests took $time ms.")
 
 
-        val job = GlobalScope.launch(Dispatchers.Default) {
-           Log.d(TAG,"STARTİNG LONG RUNNİNG CALCULATİON")
-            withTimeout(200L){// if it needs longer than 3000mills it will cancel it automatically without needing us to cancel it manually
-                for (i in 30..40){
-                    if (isActive){
-                        Log.d(TAG,"result for i = $i :  ${fib(i)}")
-                    }
-                }
+            // Solution 1
+            //It is taking 3 seconds. But bad practice
+//            val time = measureTimeMillis {
+//                var answer1: String? = null
+//                var answer2: String? = null
+//                val job1 = launch { answer1 = networkCall1() }
+//                val job2 = launch { answer2 = networkCall2() }
+//                job1.join()
+//                job2.join()
+//
+//            }
+
+            val time = measureTimeMillis {
+                var answer1 = async { networkCall1() }
+                var answer2 = async { networkCall2() }
+                Log.d(TAG, "Answer1 is ${answer1.await()}")
+                Log.d(TAG, "Answer2 is ${answer2.await()}")
             }
 
-            Log.d(TAG,"ending LONG RUNNİNG CALCULATİON")
+            Log.d(TAG, "Requests took $time ms.")
+
         }
     }
 
-    fun fib(n: Int): Long {
-        return if (n == 0) 0
-        else if (n == 1) 1
-        else fib(n - 1) + fib(n - 2)
+    suspend fun networkCall1(): String {
+        delay(3000L)
+        return "Answer 1"
     }
 
-
+    suspend fun networkCall2(): String {
+        delay(3000L)
+        return "Answer 2"
+    }
 }
