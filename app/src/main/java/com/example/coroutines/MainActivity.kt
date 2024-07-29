@@ -11,6 +11,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
+    val TAG = "MainActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,12 +24,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         GlobalScope.launch {
-            delay(3000L) // pause the coroutine not block
-            Log.d("MainActivity", "Coroutine says hello from thread ${Thread.currentThread().name}")
+         val networkCallAnswer = doNetworkCall()
+         val networkCallAnswer2 = doNetworkCall2()
+            Log.d(TAG,networkCallAnswer)
+            Log.d(TAG,networkCallAnswer2)
+
         }
 
-        Log.d("MainActivity", "Hello from thread ${Thread.currentThread().name}")
+    }
 
+    suspend fun doNetworkCall(): String {
+        delay(3000L)
+        return "This is the answer"
+    }
+
+    suspend fun doNetworkCall2(): String {
+        delay(3000L)
+        return "This is the answer"
     }
 
 }
