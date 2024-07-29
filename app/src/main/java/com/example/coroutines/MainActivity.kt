@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // it returns a job so we can save it in a variable
+
        val job = GlobalScope.launch(Dispatchers.Default) {
            repeat(5){
                Log.d(TAG,"Coroutine is still working ....")
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
        }
         runBlocking {
             delay(2000L)
-            job.join()  //it will block our thread until coroutine(33. line) is finished
+            job.cancel() // 2 sn sonra cancel ettiğimiz için üstteki coroutine 2 sn çalışır sonra cancel edilir.
             Log.d(TAG,"main thread is continuing ....")
         }
 
