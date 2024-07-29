@@ -43,6 +43,15 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "Before runblocking")
         runBlocking {
+            launch(Dispatchers.IO) {
+                delay(3000L)
+                Log.d(TAG, "Finished IO coroutine 1 ")
+            }
+            launch(Dispatchers.IO) {
+                delay(3000L)
+                Log.d(TAG, "Finished IO coroutine 2 ")
+            }
+
             Log.d(TAG, "start of runblocking")
             delay(5000L)
             Log.d(TAG, "end of runblocking")
