@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
@@ -28,21 +29,25 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "starting coroutine in thread ${Thread.currentThread().name}")
-            val answer = doNetworkCall()
-            withContext(Dispatchers.Main){// we want to change the context
-                Log.d(TAG, "setting text in thread ${Thread.currentThread().name}")
-                binding.tvDummy.text = answer
-            }
+//        //run blocking will block the main thread Global.scope wont.
+//        // If we call delay function in Global scope we can still use our UI while we are delaying that
+//        GlobalScope.launch(Dispatchers.Main) {
+//        }
 
+//        // ıf we use delay in runBlocing function
+//        // this will block our UI updates
+//        runBlocking {
+//            delay(100L)
+//        }
+
+
+        Log.d(TAG, "Before runblocking")
+        runBlocking {
+            Log.d(TAG, "start of runblocking")
+            delay(5000L)
+            Log.d(TAG, "end of runblocking")
         }
-
-    }
-
-    suspend fun doNetworkCall(): String {
-        delay(3000L)
-        return "This is the answer"
+        Log.d(TAG, "After runblocking")
     }
 
 
