@@ -7,6 +7,10 @@ android {
     namespace = "com.example.coroutines"
     compileSdk = 34
 
+    buildFeatures{
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.example.coroutines"
         minSdk = 24
