@@ -10,6 +10,7 @@ import com.example.coroutines.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -30,19 +31,29 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-       val job = GlobalScope.launch(Dispatchers.Default) {
-           repeat(5){
-               Log.d(TAG,"Coroutine is still working ....")
-               delay(1000L)
-           }
+        val job = GlobalScope.launch(Dispatchers.Default) {
+           Log.d(TAG,"STARTİNG LONG RUNNİNG CALCULATİON")
+            for (i in 30..40){
+                if (isActive){ // checking if the coroutine is active
+                    Log.d(TAG,"result for i = $i :  ${fib(i)}")
+                }
+            }
+            Log.d(TAG,"ending LONG RUNNİNG CALCULATİON")
 
-       }
+
+        }
         runBlocking {
-            delay(2000L)
-            job.cancel() // 2 sn sonra cancel ettiğimiz için üstteki coroutine 2 sn çalışır sonra cancel edilir.
-            Log.d(TAG,"main thread is continuing ....")
+            delay (500L)
+            job.cancel()
+            Log.d(TAG, "cancelled job  ....")
         }
 
+    }
+
+    fun fib(n: Int): Long {
+        return if (n == 0) 0
+        else if (n == 1) 1
+        else fib(n - 1) + fib(n - 2)
     }
 
 
