@@ -1,11 +1,13 @@
 package com.example.coroutines
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.coroutines.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,47 +34,29 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        GlobalScope.launch(Dispatchers.IO) {
-//            val time = measureTimeMillis { // ıt is taking 6 seconds to finish, we dont have to wait that long.
-//                val answer1 = networkCall1()
-//                val answer2 = networkCall2()
-//                Log.d(TAG,"Answer1 is $answer1")
-//                Log.d(TAG,"Answer2 is $answer2")
-//            }
-            //  Log.d(TAG,"Requests took $time ms.")
 
+        binding.btnStartActivity.setOnClickListener {
+            //  GlobalScope.launch { --eğer bu şekilde kullanırsak activity destroy edilse bile coroutine scope çalışmaya devam eder.
 
-            // Solution 1
-            //It is taking 3 seconds. But bad practice
-//            val time = measureTimeMillis {
-//                var answer1: String? = null
-//                var answer2: String? = null
-//                val job1 = launch { answer1 = networkCall1() }
-//                val job2 = launch { answer2 = networkCall2() }
-//                job1.join()
-//                job2.join()
-//
-//            }
-
-            val time = measureTimeMillis {
-                var answer1 = async { networkCall1() }
-                var answer2 = async { networkCall2() }
-                Log.d(TAG, "Answer1 is ${answer1.await()}")
-                Log.d(TAG, "Answer2 is ${answer2.await()}")
+            lifecycleScope.launch {
+                // it will stick this coroutine to the lifecycle of our activity
+                // if our activity destroyed that means that all coroutines launched in this lifecycle scope will also destroyed.
+                while (true) {
+                    delay(1000L)
+                    Log.d(TAG, "Still running...")
+                }
             }
+            GlobalScope.launch {
+                delay(5000L)
+                Intent(this@MainActivity, SecondActivity::class.java).also {
+                    startActivity(it)
+                    finish()
+                }
 
-            Log.d(TAG, "Requests took $time ms.")
-
+            }
         }
+
     }
 
-    suspend fun networkCall1(): String {
-        delay(3000L)
-        return "Answer 1"
-    }
 
-    suspend fun networkCall2(): String {
-        delay(3000L)
-        return "Answer 2"
-    }
 }
